@@ -32,6 +32,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <button onClick={() => onNavigate('poster-studio')} className="hover:text-slate-200 transition-colors cursor-pointer">
             Poster Studio
           </button>
+          <button onClick={() => onNavigate('pdf-editor')} className="hover:text-purple-300 text-purple-400 font-semibold transition-colors cursor-pointer">
+            PDF Editor
+          </button>
           <button onClick={() => onNavigate('poster-dashboard')} className="hover:text-slate-200 transition-colors cursor-pointer">
             My Designs
           </button>

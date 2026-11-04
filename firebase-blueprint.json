@@ -1,0 +1,146 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role authentication",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "photoURL": { "type": "string", "maxLength": 1024 },
+        "role": { "type": "string", "enum": ["student", "admin"] },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "email", "role"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Admin authorization entry",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "maxLength": 256 },
+        "addedAt": { "type": "string", "maxLength": 64 },
+        "role": { "type": "string", "enum": ["admin"] }
+      },
+      "required": ["email", "role"]
+    },
+    "PosterDesign": {
+      "title": "PosterDesign",
+      "description": "Saved poster or visual graphic design",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "thumbnailUrl": { "type": "string", "maxLength": 2048 },
+        "canvasWidth": { "type": "number" },
+        "canvasHeight": { "type": "number" },
+        "dimensionName": { "type": "string", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["draft", "published", "archived"] },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "userId", "title"]
+    },
+    "PdfDocument": {
+      "title": "PdfDocument",
+      "description": "PDF document loaded or modified in PDF Editor",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "pageCount": { "type": "number" },
+        "fileSize": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "archived"] },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "userId", "title"]
+    },
+    "PosterTemplate": {
+      "title": "PosterTemplate",
+      "description": "Reusable poster template",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 200 },
+        "category": { "type": "string", "maxLength": 100 },
+        "thumbnailUrl": { "type": "string", "maxLength": 2048 },
+        "canvasWidth": { "type": "number" },
+        "canvasHeight": { "type": "number" },
+        "dimensionName": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "name", "category"]
+    },
+    "Competition": {
+      "title": "Competition",
+      "description": "Competition listed on the platform",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 256 },
+        "organizer": { "type": "string", "maxLength": 256 },
+        "category": { "type": "string", "maxLength": 100 },
+        "deadline": { "type": "string", "maxLength": 64 },
+        "prizePool": { "type": "string", "maxLength": 100 },
+        "participantsCount": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "ended", "upcoming"] },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "title", "organizer"]
+    },
+    "CampusEvent": {
+      "title": "CampusEvent",
+      "description": "Campus event listed on the platform",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 256 },
+        "organizer": { "type": "string", "maxLength": 256 },
+        "date": { "type": "string", "maxLength": 64 },
+        "time": { "type": "string", "maxLength": 64 },
+        "venue": { "type": "string", "maxLength": 256 },
+        "category": { "type": "string", "maxLength": 100 },
+        "attendeesCount": { "type": "number" },
+        "isFeatured": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "title", "organizer", "date"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile collection"
+    },
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "Admin authorization documents"
+    },
+    "/designs/{designId}": {
+      "schema": "PosterDesign",
+      "description": "User created designs"
+    },
+    "/pdfDocuments/{docId}": {
+      "schema": "PdfDocument",
+      "description": "User PDF documents"
+    },
+    "/templates/{templateId}": {
+      "schema": "PosterTemplate",
+      "description": "Poster templates library"
+    },
+    "/competitions/{competitionId}": {
+      "schema": "Competition",
+      "description": "Campus and inter-collegiate competitions"
+    },
+    "/events/{eventId}": {
+      "schema": "CampusEvent",
+      "description": "Campus events schedule"
+    }
+  }
+}

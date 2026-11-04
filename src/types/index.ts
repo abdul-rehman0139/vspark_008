@@ -9,7 +9,8 @@ export type PageView =
   | 'poster-studio' 
   | 'poster-editor' 
   | 'poster-dashboard' 
-  | 'poster-admin';
+  | 'poster-admin'
+  | 'pdf-editor';
 
 export interface CanvasDimension {
   id: string;
@@ -80,9 +81,21 @@ export interface UserProfile {
   id: string;
   name: string;
   email: string;
-  avatarUrl: string;
+  avatarUrl?: string;
+  avatar?: string;
   role: 'student' | 'organizer' | 'admin';
-  institution: string;
+  institution?: string;
+}
+
+export interface PdfDocumentRecord {
+  id: string;
+  userId: string;
+  title: string;
+  pageCount: number;
+  fileSize?: number;
+  thumbnailUrl?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Competition {

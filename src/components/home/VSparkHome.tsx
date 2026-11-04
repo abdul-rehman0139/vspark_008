@@ -55,7 +55,7 @@ export const VSparkHome: React.FC<VSparkHomeProps> = ({
                 Discover university hackathons, research symposiums, and pitch competitions. Now featuring <strong className="text-slate-200 font-semibold">VSpark Poster Studio</strong>: design and export print-quality event posters in minutes.
               </p>
 
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-2">
                 <button
                   onClick={() => onNavigate('poster-studio')}
                   className="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-sm shadow-lg shadow-indigo-600/30 flex items-center gap-2 transition-all cursor-pointer hover:scale-[1.02]"
@@ -66,8 +66,16 @@ export const VSparkHome: React.FC<VSparkHomeProps> = ({
                 </button>
 
                 <button
+                  onClick={() => onNavigate('pdf-editor')}
+                  className="px-5 py-3.5 bg-purple-950/70 hover:bg-purple-900/80 text-purple-200 border border-purple-500/40 hover:border-purple-300 font-semibold rounded-xl text-sm transition-all cursor-pointer flex items-center gap-2 shadow-lg shadow-purple-950/40"
+                >
+                  <Sparkles className="w-4 h-4 text-purple-400" />
+                  <span>PDF Editor & Watermark Remover</span>
+                </button>
+
+                <button
                   onClick={() => onNavigate('competitions')}
-                  className="px-6 py-3.5 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 hover:border-slate-700 font-semibold rounded-xl text-sm transition-all cursor-pointer"
+                  className="px-5 py-3.5 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 hover:border-slate-700 font-semibold rounded-xl text-sm transition-all cursor-pointer"
                 >
                   Explore Competitions
                 </button>

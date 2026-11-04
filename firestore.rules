@@ -1,0 +1,88 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        (request.auth.token.email != null && request.auth.token.email == 'devilboy7693@gmail.com')
+      );
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if isSignedIn() && request.auth.uid == userId && isValidId(userId);
+      allow update: if isSignedIn() && (request.auth.uid == userId || isAdmin()) && isValidId(userId);
+      allow delete: if isAdmin();
+    }
+
+    // Admins registry
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Poster Designs
+    match /designs/{designId} {
+      allow get: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin() || existing().status == 'published');
+      allow list: if isSignedIn() && (
+        isAdmin() || 
+        (resource.data.userId == request.auth.uid) ||
+        (resource.data.status == 'published')
+      );
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid && isValidId(designId);
+      allow update: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin()) && isValidId(designId);
+      allow delete: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin()) && isValidId(designId);
+    }
+
+    // PDF Documents
+    match /pdfDocuments/{docId} {
+      allow get: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid && isValidId(docId);
+      allow update: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin()) && isValidId(docId);
+      allow delete: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin()) && isValidId(docId);
+    }
+
+    // Public Templates
+    match /templates/{templateId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Competitions
+    match /competitions/{competitionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Events
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

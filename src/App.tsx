@@ -9,6 +9,8 @@ import { PosterDashboard } from './components/poster-studio/dashboard/PosterDash
 import { PosterAdmin } from './components/poster-studio/admin/PosterAdmin';
 import { PosterEditor } from './components/poster-studio/editor/PosterEditor';
 import { DimensionPickerModal } from './components/poster-studio/DimensionPickerModal';
+import { PdfEditor } from './components/pdf-editor/PdfEditor';
+import { AuthModal } from './components/auth/AuthModal';
 import { 
   PageView, 
   UserProfile, 
@@ -23,23 +25,49 @@ import {
   buildTemplateJson 
 } from './data/sampleData';
 import { StorageService } from './services/storage';
+import { auth, FirebaseService } from './services/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageView>('poster-studio');
   const [currentUser, setCurrentUser] = useState<UserProfile>(StorageService.getUser());
   const [templates, setTemplates] = useState<PosterTemplate[]>(StorageService.getTemplates());
   const [designs, setDesigns] = useState<PosterDesign[]>(StorageService.getDesigns());
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Editor states
   const [activeEditorDesign, setActiveEditorDesign] = useState<PosterDesign | null>(null);
   const [activeEditorTemplate, setActiveEditorTemplate] = useState<PosterTemplate | null>(null);
   const [isDimensionModalOpen, setIsDimensionModalOpen] = useState(false);
 
-  // Sync state on mount
+  // Sync state and Firebase Auth on mount
   useEffect(() => {
     setTemplates(StorageService.getTemplates());
     setDesigns(StorageService.getDesigns());
+
+    // Listen to Firebase Auth state
+    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
+      if (fbUser) {
+        try {
+          const profile = await FirebaseService.syncUserProfile(fbUser);
+          setCurrentUser(profile);
+          const cloudDesigns = await FirebaseService.getDesigns(profile.id);
+          if (cloudDesigns && cloudDesigns.length > 0) {
+            setDesigns(cloudDesigns);
+          }
+        } catch (err) {
+          console.warn('Auth sync error:', err);
+        }
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
+
+  const handleLogout = async () => {
+    await FirebaseService.logout();
+    setCurrentUser(StorageService.getUser());
+  };
 
   // Role toggle
   const handleToggleRole = () => {
@@ -342,6 +370,17 @@ export default function App() {
     handleSelectTemplate(evtTemplate);
   };
 
+  // If in PDF editor mode, render full screen PDF studio
+  if (currentPage === 'pdf-editor') {
+    return (
+      <PdfEditor
+        currentUser={currentUser}
+        onBackToStudio={() => setCurrentPage('poster-studio')}
+        onOpenAuth={() => setIsAuthModalOpen(true)}
+      />
+    );
+  }
+
   // If in poster editor mode, render full screen editor
   if (currentPage === 'poster-editor') {
     return (
@@ -351,6 +390,7 @@ export default function App() {
         onBack={() => setCurrentPage('poster-studio')}
         onDesignSaved={(saved) => {
           setDesigns(StorageService.getDesigns());
+          FirebaseService.saveDesign(saved).catch(console.warn);
         }}
       />
     );
@@ -365,6 +405,8 @@ export default function App() {
         currentUser={currentUser}
         onToggleRole={handleToggleRole}
         onOpenCreateModal={() => setIsDimensionModalOpen(true)}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Main Pages */}
@@ -401,6 +443,7 @@ export default function App() {
             onOpenCreateModal={() => setIsDimensionModalOpen(true)}
             onSelectTemplate={handleSelectTemplate}
             onOpenDashboard={() => setCurrentPage('poster-dashboard')}
+            onOpenPdfEditor={() => setCurrentPage('pdf-editor')}
           />
         )}
 
@@ -427,6 +470,15 @@ export default function App() {
 
       {/* Footer */}
       <Footer onNavigate={setCurrentPage} />
+
+      {/* Auth Modal with Google & Email Sign-In */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={(user) => {
+          setCurrentUser(user);
+        }}
+      />
 
       {/* Dimension Picker Modal */}
       <DimensionPickerModal

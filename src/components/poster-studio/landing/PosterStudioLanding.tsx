@@ -22,13 +22,15 @@ interface PosterStudioLandingProps {
   onOpenCreateModal: () => void;
   onSelectTemplate: (template: PosterTemplate) => void;
   onOpenDashboard: () => void;
+  onOpenPdfEditor?: () => void;
 }
 
 export const PosterStudioLanding: React.FC<PosterStudioLandingProps> = ({
   templates,
   onOpenCreateModal,
   onSelectTemplate,
-  onOpenDashboard
+  onOpenDashboard,
+  onOpenPdfEditor
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<TemplateCategory | 'All'>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -90,7 +92,7 @@ export const PosterStudioLanding: React.FC<PosterStudioLandingProps> = ({
               </p>
 
               {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-2">
                 <button
                   onClick={onOpenCreateModal}
                   className="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-sm shadow-lg shadow-indigo-600/30 flex items-center gap-2 transition-all cursor-pointer hover:scale-[1.02]"
@@ -99,9 +101,19 @@ export const PosterStudioLanding: React.FC<PosterStudioLandingProps> = ({
                   <ArrowRight className="w-4 h-4" />
                 </button>
 
+                {onOpenPdfEditor && (
+                  <button
+                    onClick={onOpenPdfEditor}
+                    className="px-5 py-3.5 bg-purple-950/70 hover:bg-purple-900/80 text-purple-200 border border-purple-500/40 hover:border-purple-400 font-semibold rounded-xl text-sm transition-all cursor-pointer flex items-center gap-2 shadow-lg shadow-purple-950/50"
+                  >
+                    <Sparkles className="w-4 h-4 text-purple-400" />
+                    <span>PDF Editor & Watermark Tool</span>
+                  </button>
+                )}
+
                 <button
                   onClick={scrollToTemplates}
-                  className="px-6 py-3.5 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 hover:border-slate-700 font-semibold rounded-xl text-sm transition-all cursor-pointer"
+                  className="px-5 py-3.5 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 hover:border-slate-700 font-semibold rounded-xl text-sm transition-all cursor-pointer"
                 >
                   Explore Templates
                 </button>
