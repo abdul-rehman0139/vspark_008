@@ -1,0 +1,6 @@
+{
+  "name": "VSpark - Competitions, Events & Poster Studio",
+  "description": "The premier student competition and event platform with a built-in professional visual poster design studio.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
